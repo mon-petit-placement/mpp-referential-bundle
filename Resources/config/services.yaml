@@ -1,0 +1,14 @@
+services:
+
+    Mpp\ReferentialBundle\Routing\ReferentialLoader:
+        arguments:
+            - '%mpp_referential.data%'
+        tags:
+            - { name: 'routing.loader' }
+
+    Mpp\ReferentialBundle\Swagger\SwaggerDecorator:
+        decorates: 'api_platform.swagger.normalizer.documentation'
+        arguments:
+            - '@Mpp\ReferentialBundle\Swagger\SwaggerDecorator.inner'
+            - '%mpp_referential.data%'
+        autoconfigure: false

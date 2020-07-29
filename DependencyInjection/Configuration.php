@@ -17,7 +17,16 @@ class Configuration implements ConfigurationInterface
 
         $treeBuilder->getRootNode()
             ->children()
-                ->arrayNode('data')->end()
+                ->arrayNode('data')
+                    ->prototype('array')
+                        ->prototype('array')
+                            ->children()
+                                ->scalarNode('slug')->end()
+                                ->scalarNode('label')->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ;
 
