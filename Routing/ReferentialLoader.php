@@ -8,6 +8,9 @@ use Symfony\Component\Routing\RouteCollection;
 
 class ReferentialLoader extends Loader
 {
+    /**
+     * @var bool
+     */
     private $isLoaded = false;
 
     /**
@@ -28,21 +31,20 @@ class ReferentialLoader extends Loader
 
         $routes = new RouteCollection();
 
-        foreach ($this->referentials as $referential => $values) {
-            // prepare a new route
-            $path = sprintf('/referential/%s.{_format}', $referential);
+        foreach ($this->referentials as $item => $values) {
+            $path = sprintf('/referential/%s.{_format}', $item);
             $defaults = [
-                '_controller' => 'Mpp\ReferentialBundle\Controller::getValues',
-                'referential' => $referential
+                '_controller' => 'mpp_referential.action.entrypoint::getValues',
+                '_referential_item' => $item,
+                '_format' => 'json',
             ];
             $requirements = [
                 'referential' => '\s+',
+                '_format' => 'json|xml',
             ];
             $route = new Route($path, $defaults, $requirements, [], null, [], ['GET']);
 
-            // add the new route to the route collection
-            $routeName = sprintf('mpp_referential_%s', $referential);
-            $routes->add($routeName, $route);
+            $routes->add(self::buildRouteName($item), $route);
         }
 
         $this->isLoaded = true;
@@ -53,5 +55,10 @@ class ReferentialLoader extends Loader
     public function supports($resource, $type = null)
     {
         return 'mpp_referential' === $type;
+    }
+
+    public static function buildRouteName($item)
+    {
+        return sprintf('mpp_referential_%s', $item);
     }
 }

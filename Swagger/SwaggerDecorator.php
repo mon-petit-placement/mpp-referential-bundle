@@ -4,16 +4,32 @@ declare(strict_types=1);
 
 namespace Mpp\ReferentialBundle\Swagger;
 
+use Mpp\ReferentialBundle\Routing\ReferentialLoader;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 final class SwaggerDecorator implements NormalizerInterface
 {
+    /**
+     * @var NormalizerInterface
+     */
     private NormalizerInterface $decorated;
 
-    public function __construct(NormalizerInterface $decorated, array $referentials)
+    /**
+     * @var UrlGeneratorInterface
+     */
+    private $router;
+
+    /**
+     * @var array
+     */
+    private $referentials;
+
+    public function __construct(NormalizerInterface $decorated, UrlGeneratorInterface $router, array $referentials)
     {
         $this->decorated = $decorated;
+        $this->router = $router;
         $this->referentials = $referentials;
     }
 
@@ -43,16 +59,17 @@ final class SwaggerDecorator implements NormalizerInterface
             ],
         ];
 
-        foreach ($this->referentials as $referential => $values) {
+        foreach ($this->referentials as $item => $values) {
+            $referentialRoute = $this->router->getRouteCollection()->get(ReferentialLoader::buildRouteName($item));
             $path = [
                 'paths' => [
-                    sprintf('/v1/referential/%s', $referential) => [
+                    $referentialRoute->getPath() => [
                         'get' => [
-                            'tags' => [sprintf('Referential %s', $referential)],
-                            'summary' => sprintf('Get %s referential.', $referential),
+                            'tags' => [sprintf('Referential %s', $item)],
+                            'summary' => sprintf('Get %s referential.', $item),
                             'responses' => [
                                 Response::HTTP_OK => [
-                                    'description' => sprintf('Get %s referential values', $referential),
+                                    'description' => sprintf('Get %s referential values', $item),
                                     'content' => [
                                         'application/json' => [
                                             'schema' => [

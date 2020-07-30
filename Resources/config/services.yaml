@@ -3,12 +3,23 @@ services:
     Mpp\ReferentialBundle\Routing\ReferentialLoader:
         arguments:
             - '%mpp_referential.data%'
-        tags:
-            - { name: 'routing.loader' }
+        tags: ['routing.loader']
 
     Mpp\ReferentialBundle\Swagger\SwaggerDecorator:
         decorates: 'api_platform.swagger.normalizer.documentation'
         arguments:
             - '@Mpp\ReferentialBundle\Swagger\SwaggerDecorator.inner'
+            - '@router'
             - '%mpp_referential.data%'
         autoconfigure: false
+
+    Mpp\ReferentialBundle\Action\EntrypointAction:
+        arguments:
+            - '@serializer'
+            - '%mpp_referential.data%'
+        public: false
+        tags: ['controller.service_arguments']
+
+    mpp_referential.action.entrypoint:
+        alias: Mpp\ReferentialBundle\Action\EntrypointAction
+        public: true
