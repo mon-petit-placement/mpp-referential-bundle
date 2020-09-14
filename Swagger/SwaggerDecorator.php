@@ -55,6 +55,11 @@ final class SwaggerDecorator implements NormalizerInterface
                         'type' => 'string',
                         'readOnly' => true,
                     ],
+                    'meta' => [
+                        'type' => 'array',
+                        'items' => [],
+                        'readOnly' => true,
+                    ],
                 ],
             ],
         ];
