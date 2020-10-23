@@ -66,12 +66,30 @@ final class SwaggerDecorator implements NormalizerInterface
 
         foreach ($this->referentials as $item => $values) {
             $referentialRoute = $this->router->getRouteCollection()->get(ReferentialLoader::buildRouteName($item));
+
+            $routePath = $referentialRoute->getPath();
+            $formatParameters = [];
+            if ('.{_format}' === substr($routePath, -10)) {
+                $formatParameters[] =  [
+                    "name" => "_format",
+                    "in" => "path",
+                    "required" => false,
+                    "schema" => [
+                        "type" => "string",
+                        "default" => $referentialRoute->getDefaults()['_format'] ?? 'json'
+                    ],
+                ];
+            }
+
             $path = [
                 'paths' => [
                     $referentialRoute->getPath() => [
                         'get' => [
                             'tags' => [sprintf('Referential %s', $item)],
                             'summary' => sprintf('Get %s referential.', $item),
+                            'parameters' => [
+                                ...$formatParameters
+                            ],
                             'responses' => [
                                 Response::HTTP_OK => [
                                     'description' => sprintf('Get %s referential values', $item),
