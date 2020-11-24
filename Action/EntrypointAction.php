@@ -2,12 +2,11 @@
 
 namespace Mpp\ReferentialBundle\Action;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\MimeTypes;
 use Symfony\Component\Serializer\Serializer;
 
-class EntrypointAction extends AbstractController
+class EntrypointAction
 {
     /**
      * @var Serializer
